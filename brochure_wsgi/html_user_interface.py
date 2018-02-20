@@ -13,9 +13,11 @@ from brochure_wsgi.response_providers.exception_response_provider import Excepti
 class HTMLUserInterface(BrochureUserInterface):
 
     def __init__(self,
+                 environ: Dict,
                  basics_response_provider: Callable[[Basics], Response],
                  not_found_response_provider: Callable[[Basics], Response],
                  exception_response_provider: Callable[[Exception, Optional[Basics]], Response]) -> None:
+        self._environ = environ
         self._response = None
         self._basics_response_provider = basics_response_provider
         self._not_found_response_provider = not_found_response_provider
@@ -26,7 +28,7 @@ class HTMLUserInterface(BrochureUserInterface):
         return self._response
 
     def show_unknown_command(self, basics: Basics) -> None:
-        self._response = self._not_found_response_provider(basics)
+        self._response = self._not_found_response_provider(basics, environ=self._environ)
 
     def show_basics(self, basics: Basics) -> None:
         self._response = self._basics_response_provider(basics)
@@ -77,7 +79,8 @@ class HTMLUserInterfaceProvider(object):
             response_serializer=html_serializer)
         super().__init__()
 
-    def __call__(self, *args, **kwargs) -> HTMLUserInterface:
-        return HTMLUserInterface(basics_response_provider=self._basics_response_provider,
+    def __call__(self, environ: Dict, *args, **kwargs) -> HTMLUserInterface:
+        return HTMLUserInterface(environ=environ,
+                                 basics_response_provider=self._basics_response_provider,
                                  not_found_response_provider=self._not_found_response_provider,
                                  exception_response_provider=self._exception_response_provider)

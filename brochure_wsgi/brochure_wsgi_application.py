@@ -75,7 +75,7 @@ class BrochureWSGIApplication(object):
         if maybe_response is not None:
             return maybe_response
 
-        user_interface = self._user_interface_provider()
+        user_interface = self._user_interface_provider(environ=environ)
         self._brochure_application.register_user_interface(user_interface=user_interface)
 
         web_command_provider = self._get_web_command_provider(environ=environ)

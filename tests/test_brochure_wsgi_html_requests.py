@@ -44,6 +44,11 @@ class TestHTMLRequests(TestCase):
 
         self.assertEqual(html.body.h2.text, "404 Not Found")
 
+    def test_not_found_page_body_contains_path(self):
+        html = self.app.get("/qwer", status=404).html
+
+        self.assertEqual(html.body.p.text, "Resource \"/qwer\" not found.")
+
     def test_not_found_page_comtains_contact_method(self):
         html = self.app.get("/fdsa", status=404).html
 
