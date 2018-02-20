@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+SCRIPTS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source ${SCRIPTS_DIR}/setup
+
+
+APPLICATION_NAME=brochure_wsgi
+
+function run_flake8 {
+    flake8 ${APPLICATION_NAME} --ignore E501
+}
+
+function run_tests {
+    pip install -r requirements-dev.txt > /dev/null 2>&1
+
+    run_flake8 > /dev/null 2>&1
+    FLAKE_STATUS=$?
+
+    coverage erase
+    coverage run --branch --source ${APPLICATION_NAME} setup.py test > /dev/null 2>&1
+    TEST_STATUS=$?
+
+    coverage report -m --skip-covered --fail-under 100 > /dev/null 2>&1
+    COVERAGE_STATUS=$?
+
+    if [[ ( ${FLAKE_STATUS} == 0 ) && ( ${TEST_STATUS} == 0 ) && ( ${COVERAGE_STATUS} == 0 ) ]] ; then
+        echo "${APPLICATION_NAME} complies with the PEP8 standard (Excepting E501)"
+        echo "${APPLICATION_NAME} is 100% covered by test."
+        echo "${APPLICATION_NAME} tests are all passing."
+    elif [[ ( ${FLAKE_STATUS} != 0 ) ]] ; then
+        echo "${APPLICATION_NAME} does not comply with the PEP8 standard:"
+        run_flake8
+        exit 1
+    elif [[ ( ${TEST_STATUS} != 0 ) ]] ; then
+        echo "${APPLICATION_NAME} has failing tests:"
+        python setup.py test
+        exit 1
+    elif [[ ( ${COVERAGE_STATUS} != 0 ) ]] ; then
+        echo "${APPLICATION_NAME} is not 100% covered by tests:"
+        coverage report -m --skip-covered --fail-under 100
+        exit 1
+    else
+        exit 1
+    fi
+}
+
+eval_in_virtual_environment run_tests

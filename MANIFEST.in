@@ -1,0 +1,3 @@
+include brochure_wsgi/VERSION
+recursive-include brochure_wsgi/static *.ico
+recursive-include brochure_wsgi/templates *.html

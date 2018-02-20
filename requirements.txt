@@ -1,0 +1,8 @@
+--no-index
+--find-links vendor/
+
+brochure==0.0.2
+Jinja2==2.10
+MarkupSafe==1.0
+Werkzeug==0.14.1
+whitenoise==3.3.1
