@@ -6,18 +6,19 @@ from brochure.values.contact_method import ContactMethodType
 from jinja2 import Environment, PackageLoader, select_autoescape
 from werkzeug.wrappers import Response
 
-from brochure_wsgi.response_providers.basics_response_provider import BasicsReponseProvider
+from brochure_wsgi.response_providers.basics_response_provider import BasicsResponseProvider
 from brochure_wsgi.response_providers.exception_response_provider import ExceptionReponseProvider
+from brochure_wsgi.response_providers.not_found_response_provider import NotFoundResponseProvider
 
 
-class HTMLUserInterface(BrochureUserInterface):
+class HTTPUserInterface(BrochureUserInterface):
 
     def __init__(self,
-                 environ: Dict,
+                 path: str,
                  basics_response_provider: Callable[[Basics], Response],
-                 not_found_response_provider: Callable[[Basics], Response],
+                 not_found_response_provider: Callable[[Basics, str], Response],
                  exception_response_provider: Callable[[Exception, Optional[Basics]], Response]) -> None:
-        self._environ = environ
+        self._path = path
         self._response = None
         self._basics_response_provider = basics_response_provider
         self._not_found_response_provider = not_found_response_provider
@@ -28,7 +29,7 @@ class HTMLUserInterface(BrochureUserInterface):
         return self._response
 
     def show_unknown_command(self, basics: Basics) -> None:
-        self._response = self._not_found_response_provider(basics, environ=self._environ)
+        self._response = self._not_found_response_provider(basics, self._path)
 
     def show_basics(self, basics: Basics) -> None:
         self._response = self._basics_response_provider(basics)
@@ -37,7 +38,7 @@ class HTMLUserInterface(BrochureUserInterface):
         self._response = self._exception_response_provider(exception, basics)
 
 
-class HTMLUserInterfaceProvider(object):
+class HTTPUserInterfaceProvider(object):
     def __init__(self):
         template_provider = Environment(
             loader=PackageLoader('brochure_wsgi', 'templates'),
@@ -67,20 +68,20 @@ class HTMLUserInterfaceProvider(object):
         index_template = template_provider.get_template("index.html")
         not_found_template = template_provider.get_template("not_found.html")
         exception_template = template_provider.get_template("exception.html")
-        self._basics_response_provider = BasicsReponseProvider(template=index_template,
-                                                               basics_context_serializer=basics_context_serializer,
-                                                               response_serializer=ok_html_serializer)
-        self._not_found_response_provider = BasicsReponseProvider(template=not_found_template,
-                                                                  basics_context_serializer=basics_context_serializer,
-                                                                  response_serializer=not_found_html_serializer)
+        self._basics_response_provider = BasicsResponseProvider(template=index_template,
+                                                                basics_context_serializer=basics_context_serializer,
+                                                                response_serializer=ok_html_serializer)
+        self._not_found_response_provider = NotFoundResponseProvider(template=not_found_template,
+                                                                     basics_context_serializer=basics_context_serializer,
+                                                                     response_serializer=not_found_html_serializer)
         self._exception_response_provider = ExceptionReponseProvider(
             template=exception_template,
             basics_context_serializer=basics_context_serializer,
             response_serializer=html_serializer)
         super().__init__()
 
-    def __call__(self, environ: Dict, *args, **kwargs) -> HTMLUserInterface:
-        return HTMLUserInterface(environ=environ,
+    def __call__(self, path: str, *args, **kwargs) -> HTTPUserInterface:
+        return HTTPUserInterface(path=path,
                                  basics_response_provider=self._basics_response_provider,
                                  not_found_response_provider=self._not_found_response_provider,
                                  exception_response_provider=self._exception_response_provider)

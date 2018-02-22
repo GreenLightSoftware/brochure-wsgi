@@ -5,7 +5,7 @@ from jinja2 import Template
 from werkzeug.wrappers import Response
 
 
-class BasicsResponseProvider(object):
+class NotFoundResponseProvider(object):
 
     def __init__(self,
                  template: Template,
@@ -16,14 +16,16 @@ class BasicsResponseProvider(object):
         self._serializer = response_serializer
         super().__init__()
 
-    def __call__(self, basics: Basics, *args, **kwargs) -> Response:
-        body = self._get_body(basics=basics)
+    def __call__(self, basics: Basics, path: str, *args, **kwargs) -> Response:
+        body = self._get_body(basics=basics, path=path)
         response = self._serializer(body)
 
         return response
 
-    def _get_body(self, basics: Basics):
+    def _get_body(self, basics: Basics, path: str):
         context = self._basics_context_serializer(basics)
+        if path is not None:
+            context = {**context, **{"path": path}}
         body = self._template.render(context)
 
         return body

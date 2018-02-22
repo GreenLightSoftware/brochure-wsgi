@@ -9,7 +9,7 @@ from werkzeug.routing import Map, Rule
 from werkzeug.wrappers import Response
 from whitenoise import WhiteNoise
 
-from brochure_wsgi.html_user_interface import HTMLUserInterface, HTMLUserInterfaceProvider
+from brochure_wsgi.http_user_interface import HTTPUserInterface, HTTPUserInterfaceProvider
 from brochure_wsgi.value_fetchers.environment_contact_method_fetcher import environment_contact_method_fetcher
 from brochure_wsgi.value_fetchers.environment_enterprise_fetcher import environment_enterprise_fetcher
 
@@ -52,8 +52,8 @@ class BrochureWSGIApplication(object):
         - Register a new `UserInterface` object with the brochure application
         - Turn the incoming request into a command (using the `GetRequestPathCommandProvider`) and feed it into the
           application
-        - Internally, the domain application injects its repsonse into the `HTMLUserInterface`
-        - Use the `HTMLUserInterface` to generate a werkzeug `Response` callable
+        - Internally, the domain application injects its repsonse into the `HTTPUserInterface`
+        - Use the `HTTPUserInterface` to generate a werkzeug `Response` callable
         - Call the `Response` callable and return its result
     """
 
@@ -61,7 +61,7 @@ class BrochureWSGIApplication(object):
                  favicon_handler: Callable,
                  favicon_url_path: str,
                  brochure_application: BrochureApplication,
-                 user_interface_provider: Callable[[], HTMLUserInterface],
+                 user_interface_provider: Callable[[str], HTTPUserInterface],
                  get_web_command_provider: GetRequestPathCommandProvider):
         super().__init__()
         self._favicon_url_path = favicon_url_path
@@ -74,8 +74,8 @@ class BrochureWSGIApplication(object):
         maybe_response = self._handle_non_domain_application_request(environ, start_response)
         if maybe_response is not None:
             return maybe_response
-
-        user_interface = self._user_interface_provider(environ=environ)
+        path = environ.get("PATH_INFO")
+        user_interface = self._user_interface_provider(path)
         self._brochure_application.register_user_interface(user_interface=user_interface)
 
         web_command_provider = self._get_web_command_provider(environ=environ)
@@ -101,9 +101,10 @@ def get_brochure_wsgi_application() -> BrochureWSGIApplication:
     domain_application = BrochureApplication(contact_method_fetcher=environment_contact_method_fetcher,
                                              enterprise_fetcher=environment_enterprise_fetcher)
     get_web_command_provider = GetRequestPathCommandProvider(url_map=url_map)
-    user_interface_provider = HTMLUserInterfaceProvider()
+    user_interface_provider = HTTPUserInterfaceProvider()
 
-    return BrochureWSGIApplication(favicon_handler=favicon_handler, favicon_url_path=favion_url_path,
+    return BrochureWSGIApplication(favicon_handler=favicon_handler,
+                                   favicon_url_path=favion_url_path,
                                    brochure_application=domain_application,
                                    user_interface_provider=user_interface_provider,
                                    get_web_command_provider=get_web_command_provider)
