@@ -16,16 +16,9 @@ class NotFoundResponseProvider(object):
         self._serializer = response_serializer
         super().__init__()
 
-    def __call__(self, basics: Basics, path: str, *args, **kwargs) -> Response:
-        body = self._get_body(basics=basics, path=path)
-        response = self._serializer(body)
-
-        return response
-
-    def _get_body(self, basics: Basics, path: str):
+    def __call__(self, basics: Basics, path: str) -> Response:
         context = self._basics_context_serializer(basics)
-        if path is not None:
-            context = {**context, **{"path": path}}
+        context["path"] = path
         body = self._template.render(context)
 
-        return body
+        return self._serializer(body)
