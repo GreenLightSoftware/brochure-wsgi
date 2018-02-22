@@ -61,7 +61,7 @@ class BrochureWSGIApplication(object):
                  favicon_handler: Callable,
                  favicon_url_path: str,
                  brochure_application: BrochureApplication,
-                 user_interface_provider: Callable[[str], HTTPUserInterface],
+                 user_interface_provider: Callable[[str, Optional[str]], HTTPUserInterface],
                  get_web_command_provider: GetRequestPathCommandProvider):
         super().__init__()
         self._favicon_url_path = favicon_url_path
@@ -75,7 +75,8 @@ class BrochureWSGIApplication(object):
         if maybe_response is not None:
             return maybe_response
         path = environ.get("PATH_INFO")
-        user_interface = self._user_interface_provider(path)
+        maybe_accept = environ.get("HTTP_ACCEPT")
+        user_interface = self._user_interface_provider(path, maybe_accept)
         self._brochure_application.register_user_interface(user_interface=user_interface)
 
         web_command_provider = self._get_web_command_provider(environ=environ)
