@@ -5,7 +5,7 @@ from werkzeug.exceptions import NotFound
 from werkzeug.routing import Map
 
 
-class PathCommandProvider(object):
+class GetPathCommandProvider(object):
     """
     Returns a callable that maps web input to domain application input.
 
