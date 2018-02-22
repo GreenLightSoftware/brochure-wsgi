@@ -39,7 +39,7 @@ class TestJSONRequests(TestCase):
         self.assertEqual(expected_response_body, response.json_body)
 
     def test_raise_exception_still_shows_basics(self):
-        self.app.app._brochure_application._command_map = None
+        self.app.app._domain_application._command_map = None
         response = self.app.get("/", headers={'Accept': 'application/json'}, status=500)
 
         expected_response_body = {

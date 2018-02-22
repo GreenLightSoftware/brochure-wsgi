@@ -56,20 +56,20 @@ class TestHTMLRequests(TestCase):
                         "Actual footer text: '{}'".format(html.footer.p.text))
 
     def test_raise_exception_still_shows_page_title(self):
-        self.app.app._brochure_application._command_map = None
+        self.app.app._domain_application._command_map = None
         html = self.app.get("/", status=500).html
 
         self.assertEqual("Example Enterprise | 500", html.title.text)
 
     def test_raise_exception_still_shows_contact_method(self):
-        self.app.app._brochure_application._command_map = None
+        self.app.app._domain_application._command_map = None
         html = self.app.get("/", status=500).html
 
         self.assertTrue("Email: ejemplo@example.com" in html.footer.p.text,
                         "Actual footer text: '{}'".format(html.footer.p.text))
 
     def test_raise_exception_body_contains_error_message(self):
-        self.app.app._brochure_application._command_map = None
+        self.app.app._domain_application._command_map = None
         html = self.app.get("/", status=500).html
 
         self.assertEqual(html.body.h2.text, "500 Internal Server Error")
