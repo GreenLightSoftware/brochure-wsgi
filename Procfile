@@ -1,1 +1,0 @@
-web: gunicorn overview_web.web_application:application --workers=${GUNICORN_WORKERS}
