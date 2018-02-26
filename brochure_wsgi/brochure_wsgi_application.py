@@ -38,7 +38,7 @@ class BrochureWSGIApplication(object):
         self._web_route_map = web_route_map
         self._domain_application = domain_application
         self._user_interface_provider = user_interface_provider
-        self._get_web_command_provider = get_path_command_provider
+        self._get_path_command_provider = get_path_command_provider
 
     def __call__(self, environ, start_response):
         path = environ.get("PATH_INFO")
@@ -51,8 +51,8 @@ class BrochureWSGIApplication(object):
         user_interface = self._user_interface_provider(path, maybe_accept_header)
         self._domain_application.register_user_interface(user_interface=user_interface)
 
-        command_provider = self._get_web_command_provider(environ=environ)
-        self._domain_application.process_command(command_provider=command_provider)
+        path_command_provider = self._get_path_command_provider(environ=environ)
+        self._domain_application.process_command(command_provider=path_command_provider)
         response = user_interface.get_response()
 
         return response(environ=environ, start_response=start_response)

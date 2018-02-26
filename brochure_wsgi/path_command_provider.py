@@ -9,7 +9,7 @@ class GetPathCommandProvider(object):
     """
     Returns a callable that maps web input to domain application input.
 
-    Takes in data from an HTTP request (the contents of the `environ` parameter: path, method, body,
+    Takes in data from an HTTP request (the contents of the `environ` parameter: path, method,
     etc) and returns a command type and associated command parameters for the brochure application.
     """
 
