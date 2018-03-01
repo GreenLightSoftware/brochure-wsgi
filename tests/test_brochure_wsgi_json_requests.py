@@ -11,18 +11,21 @@ class TestJSONRequests(TestCase):
     def setUp(self):
         super().setUp()
         web_application = get_brochure_wsgi_application()
+        os.environ["BROCHURE_COVER_SECTION"] = '{"title": "Cover Title", "body": "Body text"}'
         os.environ['BROCHURE_ENTERPRISE'] = '{"name": "Example Enterprise"}'
         os.environ['BROCHURE_CONTACT_METHOD'] = '{"contact_method_type": "email", "value": "ejemplo@example.com"}'
         self.app = TestApp(web_application)
 
-    def test_homepage_title_contains_enterprise_name(self):
+    def test_homepage_title_contains_enterprise_contact_methods_and_section(self):
         response = self.app.get('/', headers={'Accept': 'application/json'})
 
         expected_response_body = {
             "enterprise": {"name": "Example Enterprise"},
             "contact_method": {"contact_method_type": "email",
                                "display_name": "Email",
-                               "value": "ejemplo@example.com"}
+                               "value": "ejemplo@example.com"},
+            "section": {"title": "Cover Title",
+                        "body": "Body text"}
         }
         self.assertEqual(expected_response_body, response.json_body)
 

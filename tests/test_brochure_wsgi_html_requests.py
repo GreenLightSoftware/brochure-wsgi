@@ -11,6 +11,7 @@ class TestHTMLRequests(TestCase):
     def setUp(self):
         super().setUp()
         web_application = get_brochure_wsgi_application()
+        os.environ["BROCHURE_COVER_SECTION"] = '{"title": "Cover Title", "body": "Body text"}'
         os.environ["BROCHURE_ENTERPRISE"] = '{"name": "Example Enterprise"}'
         os.environ["BROCHURE_CONTACT_METHOD"] = '{"contact_method_type": "email", "value": "ejemplo@example.com"}'
         self.app = TestApp(web_application)
@@ -24,6 +25,16 @@ class TestHTMLRequests(TestCase):
         html = self.app.get("/").html
 
         self.assertEqual(html.header.h1.text, "Example Enterprise")
+
+    def test_homepage_body_contains_section_title(self):
+        html = self.app.get("/").html
+
+        self.assertTrue("Cover Title" in html.body.text)
+
+    def test_homepage_body_contains_section_body(self):
+        html = self.app.get("/").html
+
+        self.assertTrue("Body text" in html.body.text)
 
     def test_homepage_footer_comtains_contact_method(self):
         html = self.app.get("/").html

@@ -10,6 +10,7 @@ from whitenoise import WhiteNoise
 from brochure_wsgi.http_user_interface import HTTPUserInterface, HTTPUserInterfaceProvider
 from brochure_wsgi.path_command_provider import GetPathCommandProvider
 from brochure_wsgi.value_fetchers.environment_contact_method_fetcher import environment_contact_method_fetcher
+from brochure_wsgi.value_fetchers.environment_cover_section_fetcher import environment_cover_section_fetcher
 from brochure_wsgi.value_fetchers.environment_enterprise_fetcher import environment_enterprise_fetcher
 
 
@@ -69,10 +70,11 @@ def get_brochure_wsgi_application() -> BrochureWSGIApplication:
     web_route_map = {favicon_url_path: favicon_handler}
 
     brochure_application_command_map = Map()
-    brochure_application_command_map.add(Rule("/", endpoint=lambda: CommandType.SHOW_BASICS))
+    brochure_application_command_map.add(Rule("/", endpoint=lambda: CommandType.SHOW_COVER))
     get_path_command_provider = GetPathCommandProvider(url_map=brochure_application_command_map)
 
     domain_application = BrochureApplication(contact_method_fetcher=environment_contact_method_fetcher,
+                                             cover_section_fetcher=environment_cover_section_fetcher,
                                              enterprise_fetcher=environment_enterprise_fetcher)
     user_interface_provider = HTTPUserInterfaceProvider()
 
