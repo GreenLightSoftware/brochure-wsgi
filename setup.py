@@ -18,6 +18,7 @@ setup(name=package_name,
           "{}.deserializers".format(package_name),
           "{}.response_providers".format(package_name),
           "{}.value_fetchers".format(package_name),
+          "{}.command_preprocessors".format(package_name),
       ],
       install_requires=[
           'brochure',

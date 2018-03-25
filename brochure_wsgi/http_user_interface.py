@@ -27,7 +27,7 @@ class HTTPUserInterface(BrochureUserInterface):
         self._exception_response_provider = exception_response_provider
         super().__init__()
 
-    def get_response(self) -> Response:
+    def get_response_provider(self) -> Response:
         return self._response
 
     def show_unknown_command(self, basics: Basics) -> None:
