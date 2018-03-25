@@ -40,7 +40,7 @@ class TestUpgradeToSSLPreprocessor(TestCase):
                                                 url_from_environment=lambda e: "http://www.example.com/asdf?q")
 
         response_handler = preprocessor.preprocess(environ={}, start_response=self._fake_start_response)
-        response_handler()
+        response_handler({}, self._fake_start_response)
 
         self.assertEqual("301 Moved Permanently", self._response_body)
 
@@ -49,7 +49,7 @@ class TestUpgradeToSSLPreprocessor(TestCase):
                                                 url_from_environment=lambda e: "http://www.example.com/asdf?q")
 
         response_handler = preprocessor.preprocess(environ={}, start_response=self._fake_start_response)
-        response_handler()
+        response_handler({}, self._fake_start_response)
 
         self.assertEqual(1, len(self._response_headers))
 
@@ -58,6 +58,6 @@ class TestUpgradeToSSLPreprocessor(TestCase):
                                                 url_from_environment=lambda e: "http://www.example.com/asdf?q")
 
         response_handler = preprocessor.preprocess(environ={}, start_response=self._fake_start_response)
-        response_handler()
+        response_handler({}, self._fake_start_response)
 
         self.assertEqual(("Location", "https://www.example.com/asdf?q"), self._response_headers[0])
