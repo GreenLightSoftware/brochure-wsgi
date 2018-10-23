@@ -24,7 +24,7 @@ class DomainRedirectPreprocessor(CommandPreprocessor):
             destination_domain = self._target_domain_provider()
             secure_destination_url = urlunsplit(("https", destination_domain, source_path, source_query, source_fragment))
 
-            def redirect_to(environment: Dict, start_response_callable: Callable):
+            def redirect_to(environ: Dict, start_response: Callable):
                 start_response("301 Moved Permanently", [("Location", secure_destination_url)])
 
                 return ""
