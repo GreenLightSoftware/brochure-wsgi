@@ -4,5 +4,5 @@
 brochure==0.0.3
 Jinja2==2.10
 MarkupSafe==1.0
-Werkzeug==0.14.1
+Werkzeug==0.16
 whitenoise==3.3.1
