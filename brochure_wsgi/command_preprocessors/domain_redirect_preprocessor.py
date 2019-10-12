@@ -6,8 +6,10 @@ from brochure_wsgi.command_preprocessors.command_preprocessor import CommandPrep
 
 class DomainRedirectPreprocessor(CommandPreprocessor):
 
-    def __init__(self, url_from_environment: Callable[[Dict], str],
-                 source_domain_provider: Callable[[], Collection[str]], target_domain_provider: Callable[[], str]) -> None:
+    def __init__(self,
+                 url_from_environment: Callable[[Dict], str],
+                 source_domain_provider: Callable[[], Collection[str]],
+                 target_domain_provider: Callable[[], str]) -> None:
         super().__init__()
         self._url_from_environment = url_from_environment
         self._source_domain_provider = source_domain_provider
