@@ -2,7 +2,7 @@
 --find-links vendor/
 
 brochure==0.0.3
-Jinja2==2.10
-MarkupSafe==1.0
+Jinja2==2.10.3
+MarkupSafe==1.1.1
 Werkzeug==0.16
 whitenoise==3.3.1
